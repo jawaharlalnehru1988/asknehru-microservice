@@ -1,0 +1,37 @@
+spring:
+  application:
+    name: asknehru-backend
+  datasource:
+    url: jdbc:postgresql://localhost:5432/demoappdb
+    username: demoappuser
+    password: demoapp123
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    baseline-on-migrate: true
+    baseline-version: 0
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+server:
+  port: 8081
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+auth:
+  jwt:
+    issuer: asknehru-auth
+    secret: ASKNEHRU_CHANGE_THIS_SECRET_TO_BASE64_OR_LONG_RANDOM_TEXT_1234567890
+    access-expiry-seconds: 3600
+    refresh-expiry-seconds: 1209600
+asknehru:
+  base-url: https://api.asknehru.com
+  shared-upload-dir: /var/www/asknehru-platform/media/audio
+  yoga-image-upload-dir: /var/www/asknehru-platform/media/yoga-poses
+  yoga-audio-upload-dir: /var/www/asknehru-platform/media/yoga-audio
+  yoga-video-upload-dir: /var/www/asknehru-platform/media/yoga-video

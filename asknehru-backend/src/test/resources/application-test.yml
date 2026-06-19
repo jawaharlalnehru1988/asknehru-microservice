@@ -1,0 +1,26 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:asknehru_test;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        globally_quoted_identifiers: true
+  flyway:
+    enabled: false
+auth:
+  jwt:
+    issuer: asknehru-auth-test
+    secret: asknehru-test-secret-value-at-least-thirty-two-bytes-long
+    access-expiry-seconds: 3600
+    refresh-expiry-seconds: 1209600
+asknehru:
+  base-url: http://localhost:8081
+  shared-upload-dir: ${java.io.tmpdir}/asknehru-test-media
+  yoga-image-upload-dir: ${java.io.tmpdir}/asknehru-test-media/yoga-poses
+  yoga-audio-upload-dir: ${java.io.tmpdir}/asknehru-test-media/yoga-audio
+  yoga-video-upload-dir: ${java.io.tmpdir}/asknehru-test-media/yoga-video
