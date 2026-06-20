@@ -40,7 +40,8 @@ public class SecurityConfig {
                                 "/api/auth/refresh",
                                 "/api/upload/**",
                                 "/api/yoga/**",
-                                "/api/roadmaps/import-syllabus/**"
+                                "/api/roadmaps/import-syllabus/**",
+                                "/error"
                         ).permitAll()
                         // Public read-only endpoints consumed by the Angular frontend without auth
                         .requestMatchers(HttpMethod.GET,
@@ -49,10 +50,11 @@ public class SecurityConfig {
                                 "/api/conversations",
                                 "/api/conversations/**"
                         ).permitAll()
-                        // Allow explain and MCQ endpoints for anonymous users
+                        // Allow explain, MCQ, and chat endpoints for anonymous users
                         .requestMatchers(HttpMethod.POST,
                                 "/api/conversations/explain",
-                                "/api/conversations/*/mcq"
+                                "/api/conversations/*/mcq",
+                                "/api/conversations/chat"
                         ).permitAll()
                         // Registration via user creation endpoint used by frontend
                         .requestMatchers(HttpMethod.POST, "/api/users").permitAll()

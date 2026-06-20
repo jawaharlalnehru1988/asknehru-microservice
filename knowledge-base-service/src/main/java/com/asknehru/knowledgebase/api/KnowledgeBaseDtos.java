@@ -60,4 +60,15 @@ public final class KnowledgeBaseDtos {
             String subTopic
     ) {
     }
+
+    public record ChatRequest(
+            @NotNull Long subtopicId,
+            @NotBlank String question
+    ) {
+    }
+
+    public record ChatResponse(
+            String answer
+    ) {
+    }
 }

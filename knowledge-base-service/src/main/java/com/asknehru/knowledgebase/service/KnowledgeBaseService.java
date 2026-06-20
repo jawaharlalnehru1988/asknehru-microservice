@@ -171,6 +171,19 @@ public class KnowledgeBaseService {
         return knowledgeBaseRepository.save(knowledgeBase);
     }
 
+    public String chatAboutSubtopic(Long subtopicId, String question) {
+        KnowledgeBase knowledgeBase = knowledgeBaseRepository.findBySubtopicId(subtopicId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "KnowledgeBase not found for subtopic: " + subtopicId));
+        
+        String systemPrompt = "You are a helpful AI assistant for the asknehru platform. " +
+                "You are tasked with answering a user's question based strictly on the following article context. " +
+                "If the answer is not in the context, you can use your general knowledge, but prioritize the article. " +
+                "Respond in clear markdown format. " +
+                "\n\nArticle Context:\n" + knowledgeBase.getArticle();
+                
+        return llmService.generate(systemPrompt, question);
+    }
+
     public KnowledgeBaseResponse toResponse(KnowledgeBase kb) {
         if (kb == null) return null;
         String mainTopic = null;

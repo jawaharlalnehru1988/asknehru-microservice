@@ -4,6 +4,8 @@ import com.asknehru.knowledgebase.api.KnowledgeBaseDtos.KnowledgeBaseResponse;
 import com.asknehru.knowledgebase.api.KnowledgeBaseDtos.CreateKnowledgeBaseRequest;
 import com.asknehru.knowledgebase.api.KnowledgeBaseDtos.MainTopic;
 import com.asknehru.knowledgebase.api.KnowledgeBaseDtos.UpdateKnowledgeBaseRequest;
+import com.asknehru.knowledgebase.api.KnowledgeBaseDtos.ChatRequest;
+import com.asknehru.knowledgebase.api.KnowledgeBaseDtos.ChatResponse;
 import com.asknehru.knowledgebase.model.KnowledgeBase;
 import com.asknehru.knowledgebase.service.KnowledgeBaseService;
 import com.asknehru.knowledgebase.util.SharedMediaStorage;
@@ -88,6 +90,12 @@ public class KnowledgeBaseController {
     public ResponseEntity<KnowledgeBaseResponse> explainSubtopic(@Valid @RequestBody ExplainRequest request) {
         KnowledgeBase explained = knowledgeBaseService.explainSubtopic(request.subtopicId());
         return ResponseEntity.ok(knowledgeBaseService.toResponse(explained));
+    }
+
+    @PostMapping("/chat")
+    public ResponseEntity<ChatResponse> chatAboutSubtopic(@Valid @RequestBody ChatRequest request) {
+        String answer = knowledgeBaseService.chatAboutSubtopic(request.subtopicId(), request.question());
+        return ResponseEntity.ok(new ChatResponse(answer));
     }
 
     @GetMapping
