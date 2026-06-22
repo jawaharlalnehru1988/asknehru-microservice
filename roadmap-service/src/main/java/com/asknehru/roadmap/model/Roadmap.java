@@ -44,6 +44,9 @@ public class Roadmap {
     @OneToMany(mappedBy = "roadmap", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RoadmapChapter> chapters = new ArrayList<>();
 
+    @Column(name = "user_assigned_roadmap")
+    private Boolean userAssignedRoadmap = false;
+
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 }

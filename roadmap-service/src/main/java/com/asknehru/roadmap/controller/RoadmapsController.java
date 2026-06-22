@@ -93,6 +93,14 @@ public class RoadmapsController {
         return ResponseEntity.noContent().build();
     }
 
+    @PatchMapping(value = "/{id}/user-assigned", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public RoadmapResponse toggleUserAssigned(
+            @PathVariable Long id,
+            @RequestBody com.asknehru.roadmap.api.RoadmapDtos.ToggleUserAssignedRequest request) {
+        Roadmap updated = roadmapService.toggleUserAssignedRoadmap(id, request.userAssignedRoadmap());
+        return RoadmapResponse.fromEntity(updated);
+    }
+
     @GetMapping("/images/{filename}")
     public ResponseEntity<Resource> getImage(@PathVariable String filename) {
         Resource resource = roadmapService.getImage(filename);

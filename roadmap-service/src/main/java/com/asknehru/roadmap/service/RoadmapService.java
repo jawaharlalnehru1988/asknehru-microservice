@@ -126,6 +126,13 @@ public class RoadmapService {
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Roadmap not found"));
     }
 
+    public Roadmap toggleUserAssignedRoadmap(Long id, Boolean userAssignedRoadmap) {
+        Roadmap roadmap = getRoadmapOr404(id);
+        roadmap.setUserAssignedRoadmap(userAssignedRoadmap != null ? userAssignedRoadmap : false);
+        roadmap.setUpdatedAt(LocalDateTime.now());
+        return roadmapRepository.save(roadmap);
+    }
+
     public void deleteRoadmap(Long id) {
         Roadmap roadmap = getRoadmapOr404(id);
         sharedMediaStorage.delete(roadmap.getImageUrl());

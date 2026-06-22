@@ -44,6 +44,7 @@ public final class RoadmapDtos {
             String imageUrl,
             String routerLink,
             String intro,
+            Boolean userAssignedRoadmap,
             LocalDateTime createdAt,
             LocalDateTime updatedAt
     ) {
@@ -55,6 +56,7 @@ public final class RoadmapDtos {
                     roadmap.getImageUrl() == null ? null : "/api/roadmaps/images/" + roadmap.getImageUrl(),
                     roadmap.getRouterLink(),
                     roadmap.getIntro(),
+                    roadmap.getUserAssignedRoadmap(),
                     roadmap.getCreatedAt(),
                     roadmap.getUpdatedAt()
             );
@@ -86,6 +88,11 @@ public final class RoadmapDtos {
             List<RoadmapChapterRequest> chapters,
             String routerLink,
             @Size(max = 100) String intro
+    ) {
+    }
+
+    public record ToggleUserAssignedRequest(
+            Boolean userAssignedRoadmap
     ) {
     }
 }

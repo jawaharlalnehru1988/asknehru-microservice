@@ -56,6 +56,10 @@ public class SecurityConfig {
                                 "/api/conversations/*/mcq",
                                 "/api/conversations/chat"
                         ).permitAll()
+                        // Allow admin toggle of user-assigned roadmap (React Admin has no auth)
+                        .requestMatchers(HttpMethod.PATCH,
+                                "/api/roadmaps/*/user-assigned"
+                        ).permitAll()
                         // Registration via user creation endpoint used by frontend
                         .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
                         .anyRequest().authenticated()
