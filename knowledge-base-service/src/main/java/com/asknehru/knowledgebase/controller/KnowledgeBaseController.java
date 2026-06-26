@@ -135,6 +135,29 @@ public class KnowledgeBaseController {
         return knowledgeBaseService.toResponse(updated);
     }
 
+    @PutMapping(value = "/{id}/audio", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<KnowledgeBaseResponse> uploadAudio(
+            @PathVariable Long id,
+            @RequestPart("articleAudio") MultipartFile articleAudio,
+            @RequestHeader(value = "Authorization", required = false) String authHeader
+    ) {
+        // Only super admin may upload audio
+        // Removing super admin check as per request to allow upload from any device
+        // validateSuperAdmin(authHeader);
+        KnowledgeBase updated = knowledgeBaseService.updateAudioOnly(id, articleAudio);
+        return ResponseEntity.ok(knowledgeBaseService.toResponse(updated));
+    }
+
+    @DeleteMapping("/{id}/audio")
+    public ResponseEntity<KnowledgeBaseResponse> deleteAudio(
+            @PathVariable Long id,
+            @RequestHeader(value = "Authorization", required = false) String authHeader
+    ) {
+        validateSuperAdmin(authHeader);
+        KnowledgeBase updated = knowledgeBaseService.deleteAudioOnly(id);
+        return ResponseEntity.ok(knowledgeBaseService.toResponse(updated));
+    }
+
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public KnowledgeBaseResponse updateKnowledgeBaseMultipart(
             @PathVariable Long id,
@@ -200,6 +223,25 @@ public class KnowledgeBaseController {
         }
     }
 
+    private void validateSuperAdmin(String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new ResponseStatusException(UNAUTHORIZED, "Authentication required");
+        }
+        try {
+            String token = authHeader.substring(7).trim();
+            Claims claims = jwtTokenService.parseAndValidate(token);
+            if (!"access".equals(claims.get("type", String.class))) {
+                throw new ResponseStatusException(UNAUTHORIZED, "Invalid token type");
+            }
+            String email = claims.get("email", String.class);
+            if (!"jawaharlalnehru@gmail.com".equals(email)) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Super admin access required");
+            }
+        } catch (JwtException ex) {
+            throw new ResponseStatusException(UNAUTHORIZED, "Invalid token");
+        }
+    }
+
     private <T> T parseData(String data, Class<T> targetType) {
         try {
             return objectMapper.readValue(data, targetType);
@@ -208,3 +250,4 @@ public class KnowledgeBaseController {
         }
     }
 }
+

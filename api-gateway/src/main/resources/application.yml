@@ -4,6 +4,12 @@ server:
 spring:
   application:
     name: api-gateway
+  codec:
+    max-in-memory-size: 20MB
+  webflux:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
   cloud:
     gateway:
       default-filters:
@@ -24,6 +30,10 @@ spring:
           uri: lb://roadmap-service
           predicates:
             - Path=/api/roadmaps/**
+        - id: interview-simulator-route
+          uri: lb://interview-simulator
+          predicates:
+            - Path=/api/interview/**,/api/topics/**,/api/mcq-test/**,/api/coding/**,/api/repository/**,/api/documents/**,/api/chat/**,/api/resume/**,/api/manipulation-categories/**,/api/complexity-categories/**
         - id: asknehru-backend-route
           uri: lb://asknehru-backend
           predicates:

@@ -30,7 +30,7 @@ public final class KnowledgeBaseDtos {
             return new KnowledgeBaseResponse(
                     knowledgeBase.getId(),
                     knowledgeBase.getArticle(),
-                    knowledgeBase.getArticleAudio() == null ? null : "/api/conversations/audio/" + knowledgeBase.getArticleAudio(),
+                    knowledgeBase.getArticleAudio() == null ? null : "https://api.asknehru.com/media/audio/" + knowledgeBase.getArticleAudio(),
                     knowledgeBase.getSubtopicId(),
                     knowledgeBase.getCreatedAt(),
                     knowledgeBase.getUpdatedAt(),

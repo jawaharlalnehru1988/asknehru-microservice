@@ -29,7 +29,7 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .cors(cors -> cors.disable())
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
@@ -56,6 +56,9 @@ public class SecurityConfig {
                                 "/api/conversations/*/mcq",
                                 "/api/conversations/chat"
                         ).permitAll()
+                        // Audio upload/delete — auth enforced inside controller via JWT super-admin check
+                        .requestMatchers(HttpMethod.POST, "/api/conversations/*/audio").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/conversations/*/audio").authenticated()
                         // Allow admin toggle of user-assigned roadmap (React Admin has no auth)
                         .requestMatchers(HttpMethod.PATCH,
                                 "/api/roadmaps/*/user-assigned"

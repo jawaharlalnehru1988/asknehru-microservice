@@ -136,6 +136,26 @@ public class KnowledgeBaseService {
         knowledgeBaseRepository.delete(knowledgeBase);
     }
 
+    public KnowledgeBase updateAudioOnly(Long id, MultipartFile audioFile) {
+        KnowledgeBase knowledgeBase = getKnowledgeBaseOr404(id);
+        if (audioFile == null || audioFile.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Audio file is required");
+        }
+        // Delete previous audio file if any
+        sharedMediaStorage.delete(knowledgeBase.getArticleAudio());
+        knowledgeBase.setArticleAudio(sharedMediaStorage.save(audioFile));
+        knowledgeBase.setUpdatedAt(Instant.now());
+        return knowledgeBaseRepository.save(knowledgeBase);
+    }
+
+    public KnowledgeBase deleteAudioOnly(Long id) {
+        KnowledgeBase knowledgeBase = getKnowledgeBaseOr404(id);
+        sharedMediaStorage.delete(knowledgeBase.getArticleAudio());
+        knowledgeBase.setArticleAudio(null);
+        knowledgeBase.setUpdatedAt(Instant.now());
+        return knowledgeBaseRepository.save(knowledgeBase);
+    }
+
     public KnowledgeBase generateMcqs(Long id) {
         KnowledgeBase knowledgeBase = getKnowledgeBaseOr404(id);
 
