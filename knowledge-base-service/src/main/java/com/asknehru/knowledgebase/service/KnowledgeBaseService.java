@@ -66,9 +66,10 @@ public class KnowledgeBaseService {
 
         String systemPrompt = "You are a professional software engineering tutor and domain expert. " +
                 "Provide a comprehensive, high-quality, professional explanation of the subtopic in markdown format. " +
-                "Include code snippets where relevant, structure with clear headers, and keep it practical and concise.";
-        String userPrompt = String.format("Explain the subtopic '%s' in the context of the main topic '%s'.",
-                context.getSubTopicName(), context.getMainTopic());
+                "Include code snippets where relevant, structure with clear headers, and keep it practical and concise. " +
+                "CRITICAL INSTRUCTION: If providing code examples, you MUST ONLY use Java (along with Spring Boot if applicable). Do NOT use any other programming language (such as Python, JavaScript, C++, etc.).";
+        String userPrompt = String.format("Explain the subtopic '%s' in the context of the specific section/chapter '%s' and main topic '%s'.",
+                context.getSubTopicName(), context.getChapterName(), context.getMainTopic());
 
         String article = llmService.generate(systemPrompt, userPrompt);
 

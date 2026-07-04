@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 
-@Component
+@Component("userUserRegistrationListener")
 public class UserRegistrationListener {
 
     private static final Logger log = LoggerFactory.getLogger(UserRegistrationListener.class);

@@ -30,6 +30,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 class AuthFlowIntegrationTest {
 
+    @org.springframework.boot.test.context.TestConfiguration
+    static class TestConfig {
+        @org.springframework.context.annotation.Bean
+        public org.springframework.ai.vectorstore.VectorStore vectorStore() {
+            return org.mockito.Mockito.mock(org.springframework.ai.vectorstore.VectorStore.class);
+        }
+
+        @org.springframework.context.annotation.Bean
+        public org.springframework.kafka.core.KafkaTemplate kafkaTemplate() {
+            return org.mockito.Mockito.mock(org.springframework.kafka.core.KafkaTemplate.class);
+        }
+    }
+
     @Autowired
     private MockMvc mockMvc;
 

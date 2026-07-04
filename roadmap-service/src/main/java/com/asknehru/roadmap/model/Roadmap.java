@@ -47,6 +47,12 @@ public class Roadmap {
     @Column(name = "user_assigned_roadmap")
     private Boolean userAssignedRoadmap = false;
 
+    @Column(name = "category", nullable = false)
+    private String category = "TECHNICAL";
+
+    @Column(name = "display_order", nullable = false)
+    private Integer displayOrder = 0;
+
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 }

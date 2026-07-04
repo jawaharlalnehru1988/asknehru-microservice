@@ -45,6 +45,8 @@ public final class RoadmapDtos {
             String routerLink,
             String intro,
             Boolean userAssignedRoadmap,
+            String category,
+            Integer displayOrder,
             LocalDateTime createdAt,
             LocalDateTime updatedAt
     ) {
@@ -57,6 +59,8 @@ public final class RoadmapDtos {
                     roadmap.getRouterLink(),
                     roadmap.getIntro(),
                     roadmap.getUserAssignedRoadmap(),
+                    roadmap.getCategory(),
+                    roadmap.getDisplayOrder(),
                     roadmap.getCreatedAt(),
                     roadmap.getUpdatedAt()
             );
@@ -78,7 +82,9 @@ public final class RoadmapDtos {
             @NotBlank @Size(max = 200) String mainTopic,
             List<RoadmapChapterRequest> chapters,
             String routerLink,
-            @Size(max = 100) String intro
+            @Size(max = 100) String intro,
+            String category,
+            Integer displayOrder
     ) {
     }
 
@@ -87,7 +93,9 @@ public final class RoadmapDtos {
             @Size(max = 200) String mainTopic,
             List<RoadmapChapterRequest> chapters,
             String routerLink,
-            @Size(max = 100) String intro
+            @Size(max = 100) String intro,
+            String category,
+            Integer displayOrder
     ) {
     }
 

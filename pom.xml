@@ -32,8 +32,6 @@
         <module>knowledge-base-service</module>
         <module>roadmap-service</module>
         <module>asknehru-backend</module>
-        <module>api-gateway</module>
-        <module>eureka-server</module>
         <module>interview-simulator</module>
     </modules>
 

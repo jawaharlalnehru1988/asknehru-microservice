@@ -31,4 +31,7 @@ public class RoadmapSubtopic {
 
     @Column(name = "subtopic_name", nullable = false, length = 1000)
     private String subtopicName;
+
+    @Column(name = "explanation", columnDefinition = "TEXT")
+    private String explanation;
 }

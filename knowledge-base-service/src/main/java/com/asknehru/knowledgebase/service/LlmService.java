@@ -9,7 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-@Service
+@Service("knowledgeBaseLlmService")
 public class LlmService {
 
     private final RestTemplate restTemplate = new RestTemplate();

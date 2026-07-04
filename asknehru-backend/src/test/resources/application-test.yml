@@ -1,4 +1,8 @@
 spring:
+  main:
+    allow-bean-definition-overriding: true
+  autoconfigure:
+    exclude: org.springframework.ai.autoconfigure.vectorstore.pgvector.PgVectorStoreAutoConfiguration
   datasource:
     url: jdbc:h2:mem:asknehru_test;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
     driver-class-name: org.h2.Driver
@@ -12,6 +16,9 @@ spring:
         globally_quoted_identifiers: true
   flyway:
     enabled: false
+  kafka:
+    listener:
+      auto-startup: false
 auth:
   jwt:
     issuer: asknehru-auth-test

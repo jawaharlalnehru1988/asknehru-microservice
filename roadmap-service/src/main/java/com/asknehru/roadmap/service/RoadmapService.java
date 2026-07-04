@@ -27,7 +27,7 @@ import java.util.Map;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
-@Service
+@Service("monolithRoadmapService")
 public class RoadmapService {
 
     private final RoadmapRepository roadmapRepository;
@@ -55,6 +55,8 @@ public class RoadmapService {
         roadmap.setMainTopic(trim(request.mainTopic()));
         roadmap.setRouterLink(trimNullable(request.routerLink()));
         roadmap.setIntro(trimNullable(request.intro()));
+        roadmap.setCategory(request.category() != null ? request.category().trim() : "TECHNICAL");
+        roadmap.setDisplayOrder(request.displayOrder() != null ? request.displayOrder() : 0);
         roadmap.setImageUrl(sharedMediaStorage.save(image));
         roadmap.setCreatedAt(now);
         roadmap.setUpdatedAt(now);
@@ -91,6 +93,12 @@ public class RoadmapService {
         }
         if (request.intro() != null) {
             roadmap.setIntro(trimNullable(request.intro()));
+        }
+        if (request.category() != null) {
+            roadmap.setCategory(request.category().trim());
+        }
+        if (request.displayOrder() != null) {
+            roadmap.setDisplayOrder(request.displayOrder());
         }
 
         if (image != null && !image.isEmpty()) {
@@ -212,7 +220,9 @@ public class RoadmapService {
                     topic,
                     chapterRequests,
                     routerLink,
-                    "Curated learning path."
+                    "Curated learning path.",
+                    "TECHNICAL",
+                    0
             );
 
             return createRoadmap(createRequest, null);

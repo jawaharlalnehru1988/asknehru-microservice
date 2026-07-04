@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
-@Component
+@Component("roadmapUserRegistrationListener")
 public class UserRegistrationListener {
 
     private static final Logger log = LoggerFactory.getLogger(UserRegistrationListener.class);

@@ -16,7 +16,9 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
 
-@Configuration
+import org.springframework.core.annotation.Order;
+
+@Configuration("authSecurityConfig")
 @EnableMethodSecurity
 public class SecurityConfig {
 
@@ -26,10 +28,11 @@ public class SecurityConfig {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
 
-    @Bean
+    @Bean("authSecurityFilterChain")
+    @Order(2)
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> cors.disable())
+                .cors(cors -> cors.configurationSource(authCorsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
@@ -38,9 +41,11 @@ public class SecurityConfig {
                                 "/api/auth/login",
                                 "/api/auth/register",
                                 "/api/auth/refresh",
+                                "/api/auth/token/**",
                                 "/api/upload/**",
                                 "/api/yoga/**",
                                 "/api/roadmaps/import-syllabus/**",
+                                "/api/public/roadmaps/**",
                                 "/error"
                         ).permitAll()
                         // Public read-only endpoints consumed by the Angular frontend without auth
@@ -72,7 +77,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
+    public CorsConfigurationSource authCorsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOriginPatterns(List.of("*"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
