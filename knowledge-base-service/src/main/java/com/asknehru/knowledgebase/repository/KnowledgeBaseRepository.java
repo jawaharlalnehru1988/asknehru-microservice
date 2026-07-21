@@ -16,7 +16,7 @@ public interface KnowledgeBaseRepository extends JpaRepository<KnowledgeBase, Lo
     @Query(value = "SELECT DISTINCT main_topic FROM roadmaps ORDER BY main_topic ASC", nativeQuery = true)
     List<String> findDistinctMainTopics();
 
-    @Query(value = "SELECT rs.subtopic_name as subTopicName, rc.chapter_name as chapterName, r.main_topic as mainTopic, r.id as roadmapId " +
+    @Query(value = "SELECT rs.subtopic_name as subTopicName, rc.chapter_name as chapterName, r.main_topic as mainTopic, r.id as roadmapId, r.category as category " +
                    "FROM roadmap_subtopics rs " +
                    "JOIN roadmap_chapters rc ON rs.chapter_id = rc.id " +
                    "JOIN roadmaps r ON rc.roadmap_id = r.id " +
@@ -34,5 +34,6 @@ public interface KnowledgeBaseRepository extends JpaRepository<KnowledgeBase, Lo
         String getChapterName();
         String getMainTopic();
         Long getRoadmapId();
+        String getCategory();
     }
 }

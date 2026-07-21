@@ -76,9 +76,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiErrorResponse> handleGeneric(Exception ex) {
+        ex.printStackTrace();
+        String msg = ex.getMessage() != null ? ex.getMessage() : ex.toString();
+        if (ex.getCause() != null) msg += " (Cause: " + ex.getCause().getMessage() + ")";
         ApiErrorResponse response = new ApiErrorResponse(
                 "INTERNAL_ERROR",
-                "Unexpected server error",
+                msg,
                 Instant.now(),
                 Map.of()
         );

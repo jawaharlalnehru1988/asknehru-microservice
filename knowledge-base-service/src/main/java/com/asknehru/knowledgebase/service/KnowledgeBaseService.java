@@ -7,11 +7,17 @@ import com.asknehru.knowledgebase.model.KnowledgeBase;
 import com.asknehru.knowledgebase.repository.KnowledgeBaseRepository;
 import com.asknehru.knowledgebase.util.SharedMediaStorage;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.UUID;
 
 import com.asknehru.knowledgebase.api.ScoreDtos.SaveScoreRequest;
 import com.asknehru.knowledgebase.api.ScoreDtos.UserScoreResponse;
@@ -25,6 +31,11 @@ import java.util.Optional;
 @Service
 @Transactional
 public class KnowledgeBaseService {
+
+    private static final Logger log = LoggerFactory.getLogger(KnowledgeBaseService.class);
+
+    @Value("${asknehru.shared-upload-dir}")
+    private String sharedUploadDir;
 
     private final KnowledgeBaseRepository knowledgeBaseRepository;
     private final SharedMediaStorage sharedMediaStorage;
@@ -64,10 +75,20 @@ public class KnowledgeBaseService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Subtopic context not found for ID: " + subtopicId);
         }
 
-        String systemPrompt = "You are a professional software engineering tutor and domain expert. " +
-                "Provide a comprehensive, high-quality, professional explanation of the subtopic in markdown format. " +
-                "Include code snippets where relevant, structure with clear headers, and keep it practical and concise. " +
-                "CRITICAL INSTRUCTION: If providing code examples, you MUST ONLY use Java (along with Spring Boot if applicable). Do NOT use any other programming language (such as Python, JavaScript, C++, etc.).";
+        String category = context.getCategory();
+        String systemPrompt;
+        if ("TECHNICAL".equalsIgnoreCase(category)) {
+            systemPrompt = "You are a professional software engineering tutor and domain expert. " +
+                    "Provide a comprehensive, high-quality, professional explanation of the subtopic in markdown format. " +
+                    "Include code snippets where relevant, structure with clear headers, and keep it practical and concise. " +
+                    "CRITICAL INSTRUCTION: If providing code examples, you MUST ONLY use Java (along with Spring Boot if applicable). Do NOT use any other programming language (such as Python, JavaScript, C++, etc.).";
+        } else {
+            systemPrompt = "You are a professional tutor and domain expert. " +
+                    "Provide a comprehensive, high-quality, professional explanation of the subtopic in markdown format. " +
+                    "Structure with clear headers, and keep it practical and concise. " +
+                    "CRITICAL INSTRUCTION: Since this is a non-technical/common topic, you MUST NOT include any programming code snippets, programming code examples, or software coding explanations.";
+        }
+
         String userPrompt = String.format("Explain the subtopic '%s' in the context of the specific section/chapter '%s' and main topic '%s'.",
                 context.getSubTopicName(), context.getChapterName(), context.getMainTopic());
 
@@ -76,10 +97,65 @@ public class KnowledgeBaseService {
         KnowledgeBase knowledgeBase = new KnowledgeBase();
         knowledgeBase.setSubtopicId(subtopicId);
         knowledgeBase.setArticle(article);
+
+        // Auto-generate audio using Microsoft Edge Indian English voice
+        String audioFile = generateAudioForArticle(article);
+        if (audioFile != null) {
+            knowledgeBase.setArticleAudio(audioFile);
+        }
+
         knowledgeBase.setCreatedAt(Instant.now());
         knowledgeBase.setUpdatedAt(Instant.now());
 
         return knowledgeBaseRepository.save(knowledgeBase);
+    }
+
+    private String generateAudioForArticle(String articleText) {
+        try {
+            // Clean up markdown formatting characters for a cleaner spoken text
+            String cleanText = articleText
+                    .replaceAll("(?s)```.*?```", "") // Remove code blocks completely from spoken text
+                    .replaceAll("[#*`_\\-]", " ")     // Replace markdown formatting characters
+                    .replaceAll("\\s+", " ")          // Normalize spaces
+                    .trim();
+
+            if (cleanText.isEmpty()) {
+                return null;
+            }
+
+            String audioFilename = UUID.randomUUID() + ".mp3";
+            Path uploadDir = Path.of(sharedUploadDir);
+            Files.createDirectories(uploadDir);
+            Path audioFilePath = uploadDir.resolve(audioFilename);
+
+            // Write text to a temporary file
+            Path tempTextFile = Files.createTempFile("tts_", ".txt");
+            Files.writeString(tempTextFile, cleanText);
+
+            // Execute edge-tts CLI tool
+            ProcessBuilder pb = new ProcessBuilder(
+                    "edge-tts",
+                    "--voice", "en-IN-PrabhatNeural",
+                    "--file", tempTextFile.toAbsolutePath().toString(),
+                    "--write-media", audioFilePath.toAbsolutePath().toString()
+            );
+
+            Process process = pb.start();
+            boolean finished = process.waitFor(120, java.util.concurrent.TimeUnit.SECONDS);
+
+            Files.deleteIfExists(tempTextFile);
+
+            if (finished && process.exitValue() == 0) {
+                log.info("Successfully generated Indian English audio: {}", audioFilename);
+                return audioFilename;
+            } else {
+                log.error("edge-tts process failed or timed out. Exit code: {}", process.exitValue());
+                return null;
+            }
+        } catch (Exception e) {
+            log.error("Error generating text-to-speech audio via edge-tts", e);
+            return null;
+        }
     }
 
     public List<KnowledgeBase> listKnowledgeBases() {

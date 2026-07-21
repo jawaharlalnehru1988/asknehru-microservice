@@ -92,9 +92,9 @@ public class AuthService {
 
     @Transactional
     public AuthTokenResponse login(LoginRequest request) {
-        String normalizedEmail = request.email() == null ? "" : request.email().trim().toLowerCase();
+        String identifier = request.email() == null ? "" : request.email().trim().toLowerCase();
 
-        UserAccount user = userAccountRepository.findByEmail(normalizedEmail)
+        UserAccount user = userAccountRepository.findByUsernameOrEmail(identifier, identifier)
                 .orElseThrow(() -> new AuthUnauthorizedException("Invalid credentials"));
 
         if (!user.isEnabled()) {
