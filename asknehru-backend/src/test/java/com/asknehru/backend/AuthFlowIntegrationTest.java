@@ -38,8 +38,10 @@ class AuthFlowIntegrationTest {
         }
 
         @org.springframework.context.annotation.Bean
-        public org.springframework.kafka.core.KafkaTemplate kafkaTemplate() {
-            return org.mockito.Mockito.mock(org.springframework.kafka.core.KafkaTemplate.class);
+        public org.springframework.kafka.core.KafkaTemplate<Object, Object> kafkaTemplate() {
+            @SuppressWarnings("unchecked")
+            org.springframework.kafka.core.KafkaTemplate<Object, Object> mock = org.mockito.Mockito.mock(org.springframework.kafka.core.KafkaTemplate.class);
+            return mock;
         }
     }
 
