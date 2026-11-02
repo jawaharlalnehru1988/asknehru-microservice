@@ -38,6 +38,9 @@ public class JwtTokenService {
     public String generateAccessToken(UserAccount user) {
         Instant now = Instant.now();
         Instant exp = now.plusSeconds(accessExpirySeconds);
+        boolean isAdmin = "nehru00123@gmail.com".equalsIgnoreCase(user.getEmail())
+                || "jawaharlalnehruelumalai@gmail.com".equalsIgnoreCase(user.getEmail())
+                || "soundaryasouu@gmail.com".equalsIgnoreCase(user.getEmail());
 
         return Jwts.builder()
                 .setSubject(String.valueOf(user.getId()))
@@ -46,6 +49,8 @@ public class JwtTokenService {
                 .setIssuedAt(Date.from(now))
                 .setExpiration(Date.from(exp))
                 .claim("email", user.getEmail())
+                .claim("name", user.getFullName())
+                .claim("role", isAdmin ? "Super Admin" : "User")
                 .claim("type", "access")
                 .signWith(signingKey)
                 .compact();

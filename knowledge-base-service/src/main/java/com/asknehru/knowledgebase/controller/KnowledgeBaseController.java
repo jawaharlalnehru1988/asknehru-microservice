@@ -234,12 +234,18 @@ public class KnowledgeBaseController {
                 throw new ResponseStatusException(UNAUTHORIZED, "Invalid token type");
             }
             String email = claims.get("email", String.class);
-            if (!"jawaharlalnehru@gmail.com".equals(email)) {
+            if (!isSuperAdminEmail(email)) {
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Super admin access required");
             }
         } catch (JwtException ex) {
             throw new ResponseStatusException(UNAUTHORIZED, "Invalid token");
         }
+    }
+
+    private boolean isSuperAdminEmail(String email) {
+        if (email == null) return false;
+        String normalized = email.trim().toLowerCase();
+        return "nehru00123@gmail.com".equals(normalized) || "jawaharlalnehruelumalai@gmail.com".equals(normalized);
     }
 
     private <T> T parseData(String data, Class<T> targetType) {

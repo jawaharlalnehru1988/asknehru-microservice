@@ -3,7 +3,6 @@ package com.asknehru.auth.security;
 import com.asknehru.auth.repository.UserRoleRepository;
 import com.asknehru.auth.service.JwtTokenService;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,6 +36,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
+        if (SecurityContextHolder.getContext().getAuthentication() != null &&
+                SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
@@ -57,8 +62,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             new UsernamePasswordAuthenticationToken(principal, null, authorities);
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
-            } catch (JwtException | NumberFormatException ex) {
-                SecurityContextHolder.clearContext();
+            } catch (Exception ex) {
+                // Ignore tokens meant for other filters (e.g. Google OAuth / simulator tokens)
             }
         }
 

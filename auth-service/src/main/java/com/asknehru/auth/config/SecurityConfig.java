@@ -40,6 +40,7 @@ public class SecurityConfig {
                                 "/actuator/**",
                                 "/api/auth/login",
                                 "/api/auth/register",
+                                "/api/auth/google",
                                 "/api/auth/refresh",
                                 "/api/auth/token/**",
                                 "/api/upload/**",
@@ -53,7 +54,9 @@ public class SecurityConfig {
                                 "/api/roadmaps",
                                 "/api/roadmaps/**",
                                 "/api/conversations",
-                                "/api/conversations/**"
+                                "/api/conversations/**",
+                                "/api/users",
+                                "/api/users/**"
                         ).permitAll()
                         // Allow explain, MCQ, and chat endpoints for anonymous users
                         .requestMatchers(HttpMethod.POST,

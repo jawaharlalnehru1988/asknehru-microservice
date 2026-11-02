@@ -77,7 +77,7 @@ public class KnowledgeBaseService {
 
         String category = context.getCategory();
         String systemPrompt;
-        if ("TECHNICAL".equalsIgnoreCase(category)) {
+        if ("TECHNICAL".equalsIgnoreCase(category) || "DSA".equalsIgnoreCase(category)) {
             systemPrompt = "You are a professional software engineering tutor and domain expert. " +
                     "Provide a comprehensive, high-quality, professional explanation of the subtopic in markdown format. " +
                     "Include code snippets where relevant, structure with clear headers, and keep it practical and concise. " +

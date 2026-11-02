@@ -15,14 +15,28 @@ public final class UserDtos {
             Integer id,
             String username,
             String email,
+            String fullName,
+            String role,
+            boolean isStaff,
+            boolean isSuperuser,
             Instant createdAt,
             Instant updatedAt
     ) {
         public static UserResponse fromEntity(DjangoUser user) {
+            boolean isAdmin = user.isSuperuser() || user.isStaff()
+                    || "nehru00123@gmail.com".equalsIgnoreCase(user.getEmail())
+                    || "jawaharlalnehruelumalai@gmail.com".equalsIgnoreCase(user.getEmail());
+            String fullName = user.getFirstName() != null && !user.getFirstName().isBlank()
+                    ? user.getFirstName()
+                    : user.getUsername();
             return new UserResponse(
                     user.getId(),
                     user.getUsername(),
                     user.getEmail(),
+                    fullName,
+                    isAdmin ? "Super Admin" : "User",
+                    user.isStaff(),
+                    user.isSuperuser(),
                     user.getDateJoined(),
                     user.getLastLogin()
             );
