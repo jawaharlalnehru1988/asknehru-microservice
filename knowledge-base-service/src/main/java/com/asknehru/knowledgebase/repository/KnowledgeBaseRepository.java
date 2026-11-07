@@ -29,6 +29,23 @@ public interface KnowledgeBaseRepository extends JpaRepository<KnowledgeBase, Lo
                    "WHERE rs.subtopic_name = :subtopicName AND r.main_topic = :mainTopic LIMIT 1", nativeQuery = true)
     Long findSubtopicIdByNames(@Param("subtopicName") String subtopicName, @Param("mainTopic") String mainTopic);
 
+    @Query(value = "SELECT kb.subtopic_id as subtopicId, " +
+                   "CASE WHEN kb.mcqs IS NOT NULL AND jsonb_typeof(kb.mcqs::jsonb) = 'array' " +
+                   "     THEN jsonb_array_length(kb.mcqs::jsonb) ELSE 0 END as totalQuestions, " +
+                   "r.id as roadmapId " +
+                   "FROM knowledge_base kb " +
+                   "LEFT JOIN roadmap_subtopics rs ON kb.subtopic_id = rs.id " +
+                   "LEFT JOIN roadmap_chapters rc ON rs.chapter_id = rc.id " +
+                   "LEFT JOIN roadmaps r ON rc.roadmap_id = r.id " +
+                   "WHERE kb.subtopic_id IS NOT NULL", nativeQuery = true)
+    List<SubtopicMcqSummaryProjection> findSubtopicMcqSummaries();
+
+    interface SubtopicMcqSummaryProjection {
+        Long getSubtopicId();
+        Integer getTotalQuestions();
+        Long getRoadmapId();
+    }
+
     interface SubtopicContextProjection {
         String getSubTopicName();
         String getChapterName();

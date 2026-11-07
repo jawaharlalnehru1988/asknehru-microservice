@@ -3,6 +3,7 @@ package com.asknehru.knowledgebase.service;
 import com.asknehru.knowledgebase.api.KnowledgeBaseDtos.CreateKnowledgeBaseRequest;
 import com.asknehru.knowledgebase.api.KnowledgeBaseDtos.UpdateKnowledgeBaseRequest;
 import com.asknehru.knowledgebase.api.KnowledgeBaseDtos.KnowledgeBaseResponse;
+import com.asknehru.knowledgebase.api.KnowledgeBaseDtos.SubtopicMcqSummary;
 import com.asknehru.knowledgebase.model.KnowledgeBase;
 import com.asknehru.knowledgebase.repository.KnowledgeBaseRepository;
 import com.asknehru.knowledgebase.util.SharedMediaStorage;
@@ -58,6 +59,15 @@ public class KnowledgeBaseService {
         return knowledgeBaseRepository.findDistinctMainTopics();
     }
 
+    public List<SubtopicMcqSummary> getSubtopicMcqSummaries() {
+        return knowledgeBaseRepository.findSubtopicMcqSummaries().stream()
+                .map(p -> new SubtopicMcqSummary(
+                        p.getSubtopicId(),
+                        p.getTotalQuestions() != null ? p.getTotalQuestions() : 0,
+                        p.getRoadmapId()))
+                .toList();
+    }
+
     public List<Long> getExplainedSubtopicIds() {
         return knowledgeBaseRepository.findAll().stream()
                 .map(KnowledgeBase::getSubtopicId)
@@ -81,7 +91,8 @@ public class KnowledgeBaseService {
             systemPrompt = "You are a professional software engineering tutor and domain expert. " +
                     "Provide a comprehensive, high-quality, professional explanation of the subtopic in markdown format. " +
                     "Include code snippets where relevant, structure with clear headers, and keep it practical and concise. " +
-                    "CRITICAL INSTRUCTION: If providing code examples, you MUST ONLY use Java (along with Spring Boot if applicable). Do NOT use any other programming language (such as Python, JavaScript, C++, etc.).";
+                    "CRITICAL INSTRUCTION: If providing code examples, you MUST ONLY use Java (along with Spring Boot if applicable). Do NOT use any other programming language (such as Python, JavaScript, C++, etc.). " +
+                    "MANDATORY FOR DSA & CODE EXAMPLES: In the 'Explanation of the Code' section, always include a visual Mermaid diagram (using ```mermaid ... ``` flowchart TD or flowchart LR) to clearly illustrate the algorithm's logical flow, state transitions, and step-by-step decision making before giving the detailed textual breakdown.";
         } else {
             systemPrompt = "You are a professional tutor and domain expert. " +
                     "Provide a comprehensive, high-quality, professional explanation of the subtopic in markdown format. " +
@@ -310,15 +321,16 @@ public class KnowledgeBaseService {
         score.setCompletedAt(Instant.now());
 
         UserScore saved = userScoreRepository.save(score);
-        return UserScoreResponse.fromEntity(saved, context.getMainTopic(), context.getSubTopicName());
+        return UserScoreResponse.fromEntity(saved, context.getMainTopic(), context.getChapterName(), context.getSubTopicName());
     }
 
     public List<UserScoreResponse> getUserScores(Long userId) {
         return userScoreRepository.findByUserId(userId).stream().map(score -> {
             KnowledgeBaseRepository.SubtopicContextProjection context = knowledgeBaseRepository.findContextBySubtopicId(score.getSubtopicId());
             String mainTopic = context != null ? context.getMainTopic() : null;
+            String chapterName = context != null ? context.getChapterName() : null;
             String subTopic = context != null ? context.getSubTopicName() : null;
-            return UserScoreResponse.fromEntity(score, mainTopic, subTopic);
+            return UserScoreResponse.fromEntity(score, mainTopic, chapterName, subTopic);
         }).toList();
     }
 

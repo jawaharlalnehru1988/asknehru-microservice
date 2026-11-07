@@ -52,8 +52,8 @@ auth:
   jwt:
     issuer: asknehru-auth
     secret: ASKNEHRU_CHANGE_THIS_SECRET_TO_BASE64_OR_LONG_RANDOM_TEXT_1234567890
-    access-expiry-seconds: 3600
-    refresh-expiry-seconds: 1209600
+    access-expiry-seconds: 86400
+    refresh-expiry-seconds: 2592000
 asknehru:
   base-url: https://api.asknehru.com
   shared-upload-dir: /var/www/asknehru-platform/media/audio

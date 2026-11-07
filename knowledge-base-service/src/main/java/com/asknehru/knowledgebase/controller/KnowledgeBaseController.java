@@ -3,6 +3,7 @@ package com.asknehru.knowledgebase.controller;
 import com.asknehru.knowledgebase.api.KnowledgeBaseDtos.KnowledgeBaseResponse;
 import com.asknehru.knowledgebase.api.KnowledgeBaseDtos.CreateKnowledgeBaseRequest;
 import com.asknehru.knowledgebase.api.KnowledgeBaseDtos.MainTopic;
+import com.asknehru.knowledgebase.api.KnowledgeBaseDtos.SubtopicMcqSummary;
 import com.asknehru.knowledgebase.api.KnowledgeBaseDtos.UpdateKnowledgeBaseRequest;
 import com.asknehru.knowledgebase.api.KnowledgeBaseDtos.ChatRequest;
 import com.asknehru.knowledgebase.api.KnowledgeBaseDtos.ChatResponse;
@@ -84,6 +85,11 @@ public class KnowledgeBaseController {
     @GetMapping("/exists")
     public List<Long> getExplainedSubtopicIds() {
         return knowledgeBaseService.getExplainedSubtopicIds();
+    }
+
+    @GetMapping("/mcq-summaries")
+    public List<SubtopicMcqSummary> getSubtopicMcqSummaries() {
+        return knowledgeBaseService.getSubtopicMcqSummaries();
     }
 
     @PostMapping("/explain")
@@ -202,8 +208,13 @@ public class KnowledgeBaseController {
 
     @GetMapping("/scores")
     public List<UserScoreResponse> getUserScores(
+            @RequestParam(value = "userId", required = false) Long targetUserId,
             @RequestHeader(value = "Authorization", required = false) String authHeader) {
         Long userId = getUserIdFromAuthHeader(authHeader);
+        if (targetUserId != null) {
+            validateSuperAdmin(authHeader);
+            userId = targetUserId;
+        }
         return knowledgeBaseService.getUserScores(userId);
     }
 

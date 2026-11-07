@@ -44,6 +44,9 @@ public final class KnowledgeBaseDtos {
     public record MainTopic(String value, String label) {
     }
 
+    public record SubtopicMcqSummary(Long subtopicId, int totalQuestions, Long roadmapId) {
+    }
+
     public record CreateKnowledgeBaseRequest(
             Long subtopicId,
             @NotBlank String article,
